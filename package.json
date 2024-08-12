@@ -1,0 +1,19 @@
+{
+  "name": "edrm-mailer",
+  "version": "0.1.0",
+  "description": "endurance mailer module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/florianduport/edrm-mailer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/florianduport/edrm-mailer/issues"
+  },
+  "homepage": "https://github.com/florianduport/edrm-mailer#readme"
+}
