@@ -1,7 +1,9 @@
-import Webhook from './models/mailTemplate';
-import RouterBase from './router';
+import MailTemplate from './models/mailTemplate';
+import routerFactory from 'endurance-core/lib/router';
+const router = routerFactory();
 
-const router = Router();
-RouterBase.autoWire(router, MailTemplate, 'MailTemplate');
+router.autoWire(MailTemplate, 'MailTemplate', {
+    checkUserPermissions: auth.checkUserPermissions(['canManageMailTemplates'])
+  });
 
 export default router;

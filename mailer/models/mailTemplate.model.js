@@ -29,6 +29,10 @@ mailTemplateSchema.pre('save', function (next) {
   next();
 });
 
+mailTemplateSchema.statics.findByName = function (name) {
+  return this.findOne({ name });
+};
+
 const MailTemplate = mongoose.model('MailTemplate', mailTemplateSchema);
 
 export default MailTemplate;

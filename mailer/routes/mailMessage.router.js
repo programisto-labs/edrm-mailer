@@ -1,7 +1,11 @@
 import nodemailer from 'nodemailer';
 import MailMessage from '../models/mailMessage.model';
-import RouterBase from './router';
-const router = RouterBase();
+import routerFactory from 'endurance-core/lib/router';
+const router = routerFactory();
+
+router.autoWire(MailMessage, 'MailMessage', {
+  checkUserPermissions: auth.checkUserPermissions(['canManageMailMessages'])
+});
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'smtp.gmail.com', 
@@ -14,6 +18,7 @@ const transporter = nodemailer.createTransport({
   tls: {
     rejectUnauthorized: process.env.SMTP_REJECT_UNAUTHORIZED !== 'false', 
 }});
+
 
 router.post('/:id/send', async (req, res) => {
   try {
@@ -50,5 +55,6 @@ router.post('/:id/send', async (req, res) => {
     res.status(500).json({ message: 'Internal server error', error: err.message });
   }
 });
+
 
 export default router;
