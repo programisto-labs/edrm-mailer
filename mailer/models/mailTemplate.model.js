@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const mailTemplateSchema = new mongoose.Schema({
   name: {
@@ -31,4 +31,4 @@ mailTemplateSchema.pre('save', function (next) {
 
 const MailTemplate = mongoose.model('MailTemplate', mailTemplateSchema);
 
-module.exports = MailTemplate;
+export default MailTemplate;

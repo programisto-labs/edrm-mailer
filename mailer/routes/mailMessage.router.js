@@ -1,6 +1,6 @@
-const nodemailer = require('nodemailer');
-const MailMessage = require('../models/mailMessage.model');
-const RouterBase = require('./router');
+import nodemailer from 'nodemailer';
+import MailMessage from '../models/mailMessage.model';
+import RouterBase from './router';
 const router = RouterBase();
 
 const transporter = nodemailer.createTransport({
@@ -14,7 +14,6 @@ const transporter = nodemailer.createTransport({
   tls: {
     rejectUnauthorized: process.env.SMTP_REJECT_UNAUTHORIZED !== 'false', 
 }});
-
 
 router.post('/:id/send', async (req, res) => {
   try {
@@ -30,7 +29,6 @@ router.post('/:id/send', async (req, res) => {
       subject: mailMessage.subject,
       html: mailMessage.body || (mailMessage.template ? mailMessage.template.body : ''),
     };
-
 
     transporter.sendMail(mailOptions, async (error, info) => {
       if (error) {
@@ -53,4 +51,4 @@ router.post('/:id/send', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
