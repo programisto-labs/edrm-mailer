@@ -1,11 +1,14 @@
 {
   "name": "edrm-mailer",
-  "version": "0.2.1",
+  "version": "0.4.0",
   "description": "endurance mailer module",
   "type": "module",
-  "main": "index.js",
+  "main": "dist/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./dist/bin/www",
+    "dev": "tsc-watch --onSuccess \"node ./dist/bin/www\"",
+    "test": "mocha",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -16,5 +19,21 @@
   "bugs": {
     "url": "https://github.com/florianduport/edrm-mailer/issues"
   },
-  "homepage": "https://github.com/florianduport/edrm-mailer#readme"
+  "homepage": "https://github.com/florianduport/edrm-mailer#readme",
+  "dependencies": {
+    "endurance-core": "^0.4.4",
+    "mongoose": "^8.8.4",
+    "nodemailer": "^6.10.0",
+    "tsc-watch": "^6.2.1"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.12",
+    "@types/jest": "^29.0.0",
+    "@types/node": "^20.17.24",
+    "@types/nodemailer": "^6.4.17",
+    "concurrently": "^9.1.2",
+    "reflect-metadata": "^0.2.2",
+    "ts-node": "^10.0.0",
+    "typescript": "^5.8.2"
+  }
 }

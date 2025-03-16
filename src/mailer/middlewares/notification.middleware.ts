@@ -1,18 +1,16 @@
-import { registerNotification } from 'endurance-core/lib/notification';
+import { enduranceNotificationManager } from 'endurance-core';
 import nodemailer from 'nodemailer';
 import MailMessage from '../models/mailMessage.model';
-import MailTemplate from '../models/mailTemplate.model';
+import MailTemplateModel from '../models/mailTemplate.model';
 
-const emailNotificationHandler = async (options) => {
+const emailNotificationHandler = async (options: { template: string, to: string, subject: string, data: Record<string, any> }) => {
     if (!options.template) throw new Error("Template is required");
     if (!options.to) throw new Error("To is required");
     if (!options.subject) throw new Error("Subject is required");
     if (!options.data) throw new Error("Data is required");
 
     const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST || 'smtp.gmail.com',
-        port: process.env.SMTP_PORT || 587,
-        secure: process.env.SMTP_SECURE === 'true',
+        service: 'gmail',
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS,
@@ -23,7 +21,7 @@ const emailNotificationHandler = async (options) => {
     });
 
     try {
-        const template = await MailTemplate.findByName(options.template);
+        const template = await MailTemplateModel.findOne({ name: options.template });
         if (!template) {
             throw new Error(`Template '${options.template}' not found`);
         }
@@ -57,13 +55,22 @@ const emailNotificationHandler = async (options) => {
                 newMailMessage.sentAt = new Date();
                 await newMailMessage.save();
             } catch (saveError) {
-                console.error(`Failed to update mailMessage after sending email: ${saveError.message}`, { saveError });
+                if (saveError instanceof Error) {
+                    console.error(`Failed to update mailMessage after sending email: ${saveError.message}`, { saveError });
+                } else {
+                    console.error('Unknown error occurred while updating mailMessage', { saveError });
+                }
             }
         });
     } catch (err) {
-        console.error(`Error processing email send request: ${err.message}`, { err });
-        throw new Error(err);
+        if (err instanceof Error) {
+            console.error(`Error processing email send request: ${err.message}`, { err });
+            throw err;
+        } else {
+            console.error('Unknown error occurred', { err });
+            throw new Error('Unknown error occurred');
+        }
     }
 }
 
-registerNotification("EMAIL", emailNotificationHandler);
+//enduranceNotificationManager.registerNotification("EMAIL", emailNotificationHandler);
