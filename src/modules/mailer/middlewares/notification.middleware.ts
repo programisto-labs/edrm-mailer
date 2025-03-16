@@ -1,7 +1,7 @@
 import { enduranceNotificationManager } from 'endurance-core';
 import nodemailer from 'nodemailer';
-import MailMessage from '../models/mailMessage.model';
-import MailTemplateModel from '../models/mailTemplate.model';
+import MailMessage from '../models/mailMessage.model.js';
+import MailTemplateModel from '../models/mailTemplate.model.js';
 
 const emailNotificationHandler = async (options: { template: string, to: string, subject: string, data: Record<string, any> }) => {
     if (!options.template) throw new Error("Template is required");

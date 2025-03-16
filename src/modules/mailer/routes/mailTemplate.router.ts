@@ -1,4 +1,4 @@
-import MailTemplate from '../models/mailTemplate.model';
+import MailTemplate from '../models/mailTemplate.model.js';
 import { EnduranceRouter } from 'endurance-core';
 
 class MailTemplateRouter extends EnduranceRouter {

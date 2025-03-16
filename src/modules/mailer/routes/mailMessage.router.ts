@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import MailMessage from '../models/mailMessage.model';
+import MailMessage from '../models/mailMessage.model.js';
 import { EnduranceRouter } from 'endurance-core';
 
 class MailMessageRouter extends EnduranceRouter {
