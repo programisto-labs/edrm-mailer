@@ -1,17 +1,8 @@
 import nodemailer from 'nodemailer';
 import MailMessage from '../models/mailMessage.model.js';
-import { EnduranceRouter } from 'endurance-core';
+import { EnduranceRouter, SecurityOptions, Request, Response } from 'endurance-core';
 
 class MailMessageRouter extends EnduranceRouter {
-  constructor() {
-    super();
-    this.autoWire(MailMessage, 'MailMessage', /*{
-      checkUserPermissions: accessControl.checkUserPermissions(['canManageMailMessages'])
-    }*/);
-
-    this.post('/:id/send', this.sendMail);
-  }
-
   private transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -23,7 +14,20 @@ class MailMessageRouter extends EnduranceRouter {
     }
   });
 
-  private async sendMail(req: any, res: any) {
+  constructor() {
+    super();
+  }
+
+  protected setupRoutes(): void {
+    const securityOptions: SecurityOptions = {
+      permissions: ['canManageMailMessages']
+    };
+
+    this.autoWireSecure(MailMessage, 'MailMessage', securityOptions);
+    this.post('/:id/send', securityOptions, this.sendMail.bind(this));
+  }
+
+  private async sendMail(req: Request, res: Response) {
     try {
       const mailMessage = await MailMessage.findById(req.params.id).populate('template');
 

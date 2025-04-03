@@ -1,22 +1,22 @@
-import { EnduranceSchema, prop } from "endurance-core";
+import { EnduranceSchema, EnduranceModelType } from "endurance-core";
 
 class MailMessage extends EnduranceSchema {
-  @prop({ required: true })
+  @EnduranceModelType.prop({ required: true })
   public to!: string;
 
-  @prop({ required: true })
+  @EnduranceModelType.prop({ required: true })
   public from!: string;
 
-  @prop({ required: true })
+  @EnduranceModelType.prop({ required: true })
   public subject!: string;
 
-  @prop({ required: true })
+  @EnduranceModelType.prop({ required: true })
   public body!: string;
 
-  @prop({ ref: "MailTemplate" })
+  @EnduranceModelType.prop({ ref: "MailTemplate" })
   public template?: string;
 
-  @prop({ default: null })
+  @EnduranceModelType.prop({ default: null })
   public sentAt?: Date;
 }
 

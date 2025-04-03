@@ -1,14 +1,14 @@
-import { EnduranceSchema, prop } from "endurance-core";
+import { EnduranceSchema, EnduranceModel, EnduranceDocumentType, EnduranceModelType } from "endurance-core";
 import { ReturnModelType } from "@typegoose/typegoose";
 
 class MailTemplate extends EnduranceSchema {
-  @prop({ required: true, unique: true })
+  @EnduranceModelType.prop({ required: true, unique: true })
   public name!: string;
 
-  @prop({ required: true })
+  @EnduranceModelType.prop({ required: true })
   public subject!: string;
 
-  @prop({ required: true })
+  @EnduranceModelType.prop({ required: true })
   public body!: string;
 
   // Méthode statique pour trouver un template par son nom

@@ -1,12 +1,17 @@
 import MailTemplate from '../models/mailTemplate.model.js';
-import { EnduranceRouter } from 'endurance-core';
+import { EnduranceRouter, SecurityOptions, Request, Response, NextFunction, EnduranceAuthMiddleware } from 'endurance-core';
 
 class MailTemplateRouter extends EnduranceRouter {
   constructor() {
     super();
-    this.autoWire(MailTemplate, 'MailTemplate', /*{
-      checkUserPermissions: accessControl.checkUserPermissions(['canManageMailTemplates'])
-    }*/);
+  }
+
+  protected setupRoutes(): void {
+    const securityOptions: SecurityOptions = {
+      permissions: ['canManageMailTemplates']
+    };
+
+    this.autoWireSecure(MailTemplate, 'MailTemplate', securityOptions);
   }
 }
 

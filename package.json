@@ -1,6 +1,6 @@
 {
   "name": "edrm-mailer",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "endurance mailer module",
   "type": "module",
   "main": "dist/app.js",
@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/florianduport/edrm-mailer#readme",
   "dependencies": {
-    "endurance-core": "^0.4.5",
+    "endurance-core": "^0.4.19",
     "mongoose": "^8.8.4",
     "nodemailer": "^6.10.0",
     "tsc-watch": "^6.2.1"
