@@ -1,6 +1,6 @@
 {
   "name": "edrm-mailer",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "endurance mailer module",
   "type": "module",
   "main": "dist/app.js",
