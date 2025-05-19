@@ -11,7 +11,6 @@ interface SendMailOptions {
 }
 
 async function sendMail(options: SendMailOptions): Promise<void> {
-    console.log('Sending email', { options });
     if (!options.template) throw new Error("Template is required");
     if (!options.to) throw new Error("To is required");
     if (!options.subject) throw new Error("Subject is required");
