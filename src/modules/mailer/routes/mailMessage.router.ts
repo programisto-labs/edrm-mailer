@@ -1,16 +1,19 @@
 import nodemailer from 'nodemailer';
 import MailMessage from '../models/mailMessage.model.js';
-import { EnduranceRouter, SecurityOptions, Request, Response } from 'endurance-core';
+import { EnduranceRouter, SecurityOptions } from 'endurance-core';
 
 class MailMessageRouter extends EnduranceRouter {
   private transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.office365.com',
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
+      user: process.env.EMAIL_USER || '',
+      pass: process.env.EMAIL_PASSWORD || '',
     },
+    port: 587,
+    secure: false,
     tls: {
-      rejectUnauthorized: process.env.SMTP_REJECT_UNAUTHORIZED !== 'false',
+      ciphers: 'HIGH',
+      rejectUnauthorized: false
     }
   });
 
@@ -23,11 +26,10 @@ class MailMessageRouter extends EnduranceRouter {
       permissions: ['canManageMailMessages']
     };
 
-    this.autoWireSecure(MailMessage, 'MailMessage', securityOptions);
     this.post('/:id/send', securityOptions, this.sendMail.bind(this));
   }
 
-  private async sendMail(req: Request, res: Response) {
+  private async sendMail(req: any, res: any) {
     try {
       const mailMessage = await MailMessage.findById(req.params.id).populate('template');
 

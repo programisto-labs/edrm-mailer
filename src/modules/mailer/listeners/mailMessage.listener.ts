@@ -1,23 +1,41 @@
-import { enduranceNotificationManager } from 'endurance-core';
+import { enduranceListener, enduranceEventTypes } from 'endurance-core';
 import nodemailer from 'nodemailer';
 import MailMessage from '../models/mailMessage.model.js';
 import MailTemplateModel from '../models/mailTemplate.model.js';
 
-const emailNotificationHandler = async (options: { template: string, to: string, subject: string, data: Record<string, any> }) => {
+interface SendMailOptions {
+    template: string;
+    to: string;
+    subject: string;
+    data: Record<string, any>;
+}
+
+async function sendMail(options: SendMailOptions): Promise<void> {
+    console.log('Sending email', { options });
     if (!options.template) throw new Error("Template is required");
     if (!options.to) throw new Error("To is required");
     if (!options.subject) throw new Error("Subject is required");
     if (!options.data) throw new Error("Data is required");
 
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtp.office365.com',
         auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS,
+            user: process.env.EMAIL_USER || '',
+            pass: process.env.EMAIL_PASSWORD || '',
         },
+        port: 587,
+        secure: false,
         tls: {
-            rejectUnauthorized: process.env.SMTP_REJECT_UNAUTHORIZED !== 'false',
+            ciphers: 'HIGH',
+            rejectUnauthorized: false
         }
+    });
+
+    console.log('SMTP Configuration:', {
+        user: process.env.EMAIL_USER ? 'defined' : 'undefined',
+        pass: process.env.EMAIL_PASS ? 'defined' : 'undefined',
+        host: 'smtp.office365.com',
+        port: 587
     });
 
     try {
@@ -25,6 +43,7 @@ const emailNotificationHandler = async (options: { template: string, to: string,
         if (!template) {
             throw new Error(`Template '${options.template}' not found`);
         }
+
         const newMailMessage = new MailMessage({
             template: template._id,
             to: options.to,
@@ -54,6 +73,7 @@ const emailNotificationHandler = async (options: { template: string, to: string,
             try {
                 newMailMessage.sentAt = new Date();
                 await newMailMessage.save();
+                console.log('Email sent successfully', { info });
             } catch (saveError) {
                 if (saveError instanceof Error) {
                     console.error(`Failed to update mailMessage after sending email: ${saveError.message}`, { saveError });
@@ -65,12 +85,14 @@ const emailNotificationHandler = async (options: { template: string, to: string,
     } catch (err) {
         if (err instanceof Error) {
             console.error(`Error processing email send request: ${err.message}`, { err });
-            throw err;
         } else {
             console.error('Unknown error occurred', { err });
-            throw new Error('Unknown error occurred');
         }
     }
 }
 
-//enduranceNotificationManager.registerNotification("EMAIL", emailNotificationHandler);
+enduranceListener.createListener(enduranceEventTypes.SEND_EMAIL, (args: unknown) => {
+    sendMail(args as SendMailOptions);
+});
+
+export default enduranceListener;
