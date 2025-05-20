@@ -8,6 +8,8 @@ interface SendMailOptions {
     to: string;
     subject: string;
     data: Record<string, any>;
+    emailUser?: string;
+    emailPassword?: string;
 }
 
 async function sendMail(options: SendMailOptions): Promise<void> {
@@ -19,8 +21,8 @@ async function sendMail(options: SendMailOptions): Promise<void> {
     const transporter = nodemailer.createTransport({
         host: 'smtp.office365.com',
         auth: {
-            user: process.env.EMAIL_USER || '',
-            pass: process.env.EMAIL_PASSWORD || '',
+            user: options.emailUser || process.env.EMAIL_USER || '',
+            pass: options.emailPassword || process.env.EMAIL_PASSWORD || '',
         },
         port: 587,
         secure: false,
@@ -31,8 +33,8 @@ async function sendMail(options: SendMailOptions): Promise<void> {
     });
 
     console.log('SMTP Configuration:', {
-        user: process.env.EMAIL_USER ? 'defined' : 'undefined',
-        pass: process.env.EMAIL_PASS ? 'defined' : 'undefined',
+        user: (options.emailUser || process.env.EMAIL_USER) ? 'defined' : 'undefined',
+        pass: (options.emailPassword || process.env.EMAIL_PASS) ? 'defined' : 'undefined',
         host: 'smtp.office365.com',
         port: 587
     });
@@ -46,7 +48,7 @@ async function sendMail(options: SendMailOptions): Promise<void> {
         const newMailMessage = new MailMessage({
             template: template._id,
             to: options.to,
-            from: process.env.EMAIL_USER,
+            from: options.emailUser || process.env.EMAIL_USER,
             subject: options.subject,
             body: Object.keys(options.data).reduce((body, key) => {
                 const regex = new RegExp(`{${key}}`, 'g');
