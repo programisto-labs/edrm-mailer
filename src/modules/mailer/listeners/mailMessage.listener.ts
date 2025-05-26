@@ -6,7 +6,7 @@ import MailTemplateModel from '../models/mailTemplate.model.js';
 interface SendMailOptions {
     template: string;
     to: string;
-    subject: string;
+    subject?: string;
     data: Record<string, any>;
     emailUser?: string;
     emailPassword?: string;
@@ -15,7 +15,6 @@ interface SendMailOptions {
 async function sendMail(options: SendMailOptions): Promise<void> {
     if (!options.template) throw new Error("Template is required");
     if (!options.to) throw new Error("To is required");
-    if (!options.subject) throw new Error("Subject is required");
     if (!options.data) throw new Error("Data is required");
 
     const transporter = nodemailer.createTransport({
@@ -49,7 +48,7 @@ async function sendMail(options: SendMailOptions): Promise<void> {
             template: template._id,
             to: options.to,
             from: options.emailUser || process.env.EMAIL_USER,
-            subject: options.subject,
+            subject: options.subject || template.subject,
             body: Object.keys(options.data).reduce((body, key) => {
                 const regex = new RegExp(`{${key}}`, 'g');
                 return body.replace(regex, options.data[key]);
