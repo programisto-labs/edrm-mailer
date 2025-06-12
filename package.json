@@ -1,5 +1,5 @@
 {
-  "name": "edrm-mailer",
+  "name": "@programisto/edrm-mailer",
   "version": "0.4.7",
   "description": "endurance mailer module",
   "type": "module",
@@ -8,30 +8,49 @@
     "start": "node ./dist/bin/www",
     "dev": "tsc-watch --onSuccess \"node ./dist/bin/www\"",
     "test": "mocha",
-    "build": "tsc"
+    "build": "tsc",
+    "lint": "eslint \"**/*.{ts,tsx}\"",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/florianduport/edrm-mailer.git"
+    "url": "git+https://github.com/programisto-labs/edrm-mailer.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/florianduport/edrm-mailer/issues"
+    "url": "https://github.com/programisto-labs/edrm-mailer/issues"
   },
-  "homepage": "https://github.com/florianduport/edrm-mailer#readme",
+  "homepage": "https://github.com/programisto-labs/edrm-mailer#readme",
   "dependencies": {
     "endurance-core": "^0.4.27",
     "nodemailer": "^6.10.0",
     "tsc-watch": "^6.2.1"
   },
   "devDependencies": {
+    "@commitlint/config-conventional": "^19.8.1",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.3",
+    "@semantic-release/npm": "^12.0.1",
+    "@semantic-release/release-notes-generator": "^14.0.3",
     "@types/debug": "^4.1.12",
     "@types/jest": "^29.0.0",
     "@types/node": "^20.17.24",
     "@types/nodemailer": "^6.4.17",
+    "@typescript-eslint/eslint-plugin": "^8.26.0",
+    "@typescript-eslint/parser": "^8.26.0",
+    "commitlint": "^19.8.1",
     "concurrently": "^9.1.2",
+    "eslint": "^8.57.1",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-n": "^16.6.2",
+    "eslint-plugin-promise": "^6.6.0",
+    "husky": "^9.1.7",
     "reflect-metadata": "^0.2.2",
+    "semantic-release": "^24.2.5",
     "ts-node": "^10.0.0",
     "typescript": "^5.8.2"
   },
