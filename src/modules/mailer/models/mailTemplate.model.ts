@@ -1,5 +1,5 @@
-import { EnduranceSchema, EnduranceModel, EnduranceDocumentType, EnduranceModelType } from "endurance-core";
-import { ReturnModelType } from "@typegoose/typegoose";
+import { EnduranceSchema, EnduranceModelType } from 'endurance-core';
+import { ReturnModelType } from '@typegoose/typegoose';
 
 class MailTemplate extends EnduranceSchema {
   @EnduranceModelType.prop({ required: true, unique: true })
