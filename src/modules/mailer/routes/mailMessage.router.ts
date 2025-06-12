@@ -7,7 +7,7 @@ class MailMessageRouter extends EnduranceRouter {
     host: 'smtp.office365.com',
     auth: {
       user: process.env.EMAIL_USER || '',
-      pass: process.env.EMAIL_PASSWORD || '',
+      pass: process.env.EMAIL_PASSWORD || ''
     },
     port: 587,
     secure: false,
@@ -16,10 +16,6 @@ class MailMessageRouter extends EnduranceRouter {
       rejectUnauthorized: false
     }
   });
-
-  constructor() {
-    super();
-  }
 
   protected setupRoutes(): void {
     const securityOptions: SecurityOptions = {
@@ -41,7 +37,7 @@ class MailMessageRouter extends EnduranceRouter {
         from: mailMessage.from,
         to: mailMessage.to,
         subject: mailMessage.subject,
-        html: mailMessage.body || (mailMessage.template && mailMessage.template.body ? mailMessage.template.body : ''),
+        html: mailMessage.body || (mailMessage.template && mailMessage.template.body ? mailMessage.template.body : '')
       };
 
       this.transporter.sendMail(mailOptions, async (error, info) => {
