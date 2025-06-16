@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import MailMessage from '../models/mailMessage.model.js';
-import { EnduranceRouter, SecurityOptions } from 'endurance-core';
+import { EnduranceRouter, SecurityOptions } from '@programisto/endurance-core';
 
 class MailMessageRouter extends EnduranceRouter {
   private transporter = nodemailer.createTransport({
