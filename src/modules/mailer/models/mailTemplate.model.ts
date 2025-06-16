@@ -1,4 +1,4 @@
-import { EnduranceSchema, EnduranceModelType } from 'endurance-core';
+import { EnduranceSchema, EnduranceModelType } from '@programisto/endurance-core';
 import { ReturnModelType } from '@typegoose/typegoose';
 
 class MailTemplate extends EnduranceSchema {

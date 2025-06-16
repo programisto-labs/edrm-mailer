@@ -1,4 +1,4 @@
-import { EnduranceRouter } from 'endurance-core';
+import { EnduranceRouter } from '@programisto/endurance-core';
 
 class MailTemplateRouter extends EnduranceRouter {
   protected setupRoutes(): void {
