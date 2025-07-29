@@ -1,4 +1,4 @@
-import { EnduranceSchema, EnduranceModelType } from "@programisto/endurance-core";
+import { EnduranceSchema, EnduranceModelType } from '@programisto/endurance-core';
 
 class MailMessage extends EnduranceSchema {
   @EnduranceModelType.prop({ required: true })
@@ -13,7 +13,7 @@ class MailMessage extends EnduranceSchema {
   @EnduranceModelType.prop({ required: true })
   public body!: string;
 
-  @EnduranceModelType.prop({ ref: "MailTemplate" })
+  @EnduranceModelType.prop({ ref: 'MailTemplate' })
   public template?: string;
 
   @EnduranceModelType.prop({ default: null })

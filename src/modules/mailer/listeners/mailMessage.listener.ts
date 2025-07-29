@@ -13,15 +13,15 @@ interface SendMailOptions {
 }
 
 async function sendMail(options: SendMailOptions): Promise<void> {
-    if (!options.template) throw new Error("Template is required");
-    if (!options.to) throw new Error("To is required");
-    if (!options.data) throw new Error("Data is required");
+    if (!options.template) throw new Error('Template is required');
+    if (!options.to) throw new Error('To is required');
+    if (!options.data) throw new Error('Data is required');
 
     const transporter = nodemailer.createTransport({
         host: 'smtp.office365.com',
         auth: {
             user: options.emailUser || process.env.EMAIL_USER || '',
-            pass: options.emailPassword || process.env.EMAIL_PASSWORD || '',
+            pass: options.emailPassword || process.env.EMAIL_PASSWORD || ''
         },
         port: 587,
         secure: false,
@@ -52,7 +52,7 @@ async function sendMail(options: SendMailOptions): Promise<void> {
             body: Object.keys(options.data).reduce((body, key) => {
                 const regex = new RegExp(`{${key}}`, 'g');
                 return body.replace(regex, options.data[key]);
-            }, template.body),
+            }, template.body)
         });
 
         await newMailMessage.save();
@@ -61,7 +61,7 @@ async function sendMail(options: SendMailOptions): Promise<void> {
             from: newMailMessage.from,
             to: newMailMessage.to,
             subject: newMailMessage.subject,
-            html: newMailMessage.body,
+            html: newMailMessage.body
         };
 
         transporter.sendMail(mailOptions, async (error, info) => {
