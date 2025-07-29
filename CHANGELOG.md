@@ -1,3 +1,11 @@
+## [1.0.1](https://github.com/programisto-labs/edrm-mailer/compare/v1.0.0...v1.0.1) (2025-07-29)
+
+
+### Bug Fixes
+
+* trigger v1.0.1 ([04036fa](https://github.com/programisto-labs/edrm-mailer/commit/04036fa3f1d2001a099e7387f4046be7d55ed527))
+* trigger v1.0.1 ([c720285](https://github.com/programisto-labs/edrm-mailer/commit/c720285da2bb5d58c3cfd4c14a112b9dc0be0703))
+
 # 1.0.0 (2025-07-29)
 
 
