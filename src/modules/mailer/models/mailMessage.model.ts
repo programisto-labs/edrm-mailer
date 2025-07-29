@@ -1,4 +1,4 @@
-import { EnduranceSchema, EnduranceModelType } from "endurance-core";
+import { EnduranceSchema, EnduranceModelType } from "@programisto/endurance-core";
 
 class MailMessage extends EnduranceSchema {
   @EnduranceModelType.prop({ required: true })

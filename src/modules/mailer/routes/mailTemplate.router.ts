@@ -1,5 +1,5 @@
 import MailTemplate from '../models/mailTemplate.model.js';
-import { EnduranceRouter, SecurityOptions } from 'endurance-core';
+import { EnduranceRouter, SecurityOptions } from '@programisto/endurance-core';
 
 class MailTemplateRouter extends EnduranceRouter {
   constructor() {
