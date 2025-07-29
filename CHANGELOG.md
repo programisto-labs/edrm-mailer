@@ -4,6 +4,17 @@
 ### Bug Fixes
 
 * fix semantic once again ([a6e7609](https://github.com/programisto-labs/edrm-mailer/commit/a6e7609c39393b4289270fa55a946030a497014a))
+* release on scoped package ([1dae851](https://github.com/programisto-labs/edrm-mailer/commit/1dae851dc45f5b10169d48badee3759bf9b24fd5))
+* release on scoped package ([c61438e](https://github.com/programisto-labs/edrm-mailer/commit/c61438e2ead360e95c1af3c7511faa3a63e77a5d))
+* switch to scoped package ([f7652c4](https://github.com/programisto-labs/edrm-mailer/commit/f7652c4d5365652d84b2e1a68c0c68882b496e6a))
+* trigger v1.0.1 ([61470a0](https://github.com/programisto-labs/edrm-mailer/commit/61470a040093ed14cb5de7230e34a67c8177d9eb))
+
+## [1.0.2](https://github.com/programisto-labs/edrm-mailer/compare/v1.0.1...v1.0.2) (2025-07-29)
+
+
+### Bug Fixes
+
+* fix semantic once again ([a6e7609](https://github.com/programisto-labs/edrm-mailer/commit/a6e7609c39393b4289270fa55a946030a497014a))
 * switch to scoped package ([f7652c4](https://github.com/programisto-labs/edrm-mailer/commit/f7652c4d5365652d84b2e1a68c0c68882b496e6a))
 * trigger v1.0.1 ([61470a0](https://github.com/programisto-labs/edrm-mailer/commit/61470a040093ed14cb5de7230e34a67c8177d9eb))
 
