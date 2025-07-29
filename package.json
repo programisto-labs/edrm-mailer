@@ -15,10 +15,7 @@
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "prepare": "husky install"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+http://github.com/programisto-labs/edrm-mailer.git"
-  },
+  "repositoryUrl": "https://github.com/programisto-labs/edrm-mailer.git",
   "author": "",
   "license": "ISC",
   "bugs": {
