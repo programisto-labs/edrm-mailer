@@ -42,10 +42,11 @@ jobs:
         run: |
           if [ "$GITHUB_REF_NAME" = "main" ]; then
             echo "🔁 Running semantic-release in production mode"
-            export HUSKY_SKIP_HOOKS=1
+            export HUSKY=0
             npx semantic-release
           else
             echo "🧪 Dry run for $GITHUB_REF_NAME"
+            export HUSKY=0
             npx semantic-release --dry-run
           fi
         env:
