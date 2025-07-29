@@ -19,9 +19,9 @@
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "http://github.com/programisto-labs/edrm-mailer/issues"
+    "url": "https://github.com/programisto-labs/edrm-mailer/issues"
   },
-  "homepage": "http://github.com/programisto-labs/edrm-mailer#readme",
+  "homepage": "https://github.com/programisto-labs/edrm-mailer#readme",
   "dependencies": {
     "@programisto/endurance-core": "^1.0.0",
     "mongoose": "^8.8.4",
