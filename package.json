@@ -1,6 +1,6 @@
 {
-  "name": "edrm-mailer",
-  "version": "1.0.1",
+  "name": "@programisto/edrm-mailer",
+  "version": "1.0.3",
   "description": "endurance mailer module",
   "publishConfig": {
     "access": "public"
