@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/florianduport/edrm-mailer.git"
+    "url": "git+http://github.com/programisto-labs/edrm-mailer.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/florianduport/edrm-mailer/issues"
+    "url": "http://github.com/programisto-labs/edrm-mailer/issues"
   },
-  "homepage": "https://github.com/florianduport/edrm-mailer#readme",
+  "homepage": "http://github.com/programisto-labs/edrm-mailer#readme",
   "dependencies": {
     "@programisto/endurance-core": "^1.0.0",
     "mongoose": "^8.8.4",
