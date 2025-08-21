@@ -135,7 +135,7 @@ async function sendMail(options: SendMailOptions): Promise<void> {
         // Envoi de l'email avec gestion d'erreur
         transporter.sendMail(mailOptions, async (error, info) => {
             if (error) {
-                console.error(`Failed to send email`, {
+                console.error('Failed to send email', {
                     error: error.message,
                     mailOptions: {
                         from: mailOptions.from,
@@ -157,16 +157,15 @@ async function sendMail(options: SendMailOptions): Promise<void> {
                     to: options.to
                 });
             } catch (saveError) {
-                console.error(`Failed to update mailMessage after sending email`, {
+                console.error('Failed to update mailMessage after sending email', {
                     saveError: saveError instanceof Error ? saveError.message : saveError,
                     template: options.template,
                     to: options.to
                 });
             }
         });
-
     } catch (err) {
-        console.error(`Unexpected error in sendMail function`, {
+        console.error('Unexpected error in sendMail function', {
             error: err instanceof Error ? err.message : err,
             stack: err instanceof Error ? err.stack : undefined,
             options
@@ -180,7 +179,6 @@ enduranceListener.createListener(enduranceEventTypes.SEND_EMAIL, (args: unknown)
             console.error('Invalid arguments provided to SEND_EMAIL listener', { args });
             return;
         }
-
         sendMail(args as SendMailOptions);
     } catch (listenerError) {
         console.error('Error in SEND_EMAIL listener', {
