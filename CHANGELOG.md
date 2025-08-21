@@ -1,3 +1,11 @@
+## [1.0.3](https://github.com/programisto-labs/edrm-mailer/compare/v1.0.2...v1.0.3) (2025-08-21)
+
+
+### Bug Fixes
+
+* remove error when template ko ([b891fdc](https://github.com/programisto-labs/edrm-mailer/commit/b891fdcf4b45862b98945bc7436336cf9feef76e))
+* remove error when template ko ([a27f124](https://github.com/programisto-labs/edrm-mailer/commit/a27f1241cb1ed04803920b23da36c5da4c28493c))
+
 ## [1.0.2](https://github.com/programisto-labs/edrm-mailer/compare/v1.0.1...v1.0.2) (2025-07-29)
 
 
