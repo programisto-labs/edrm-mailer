@@ -1,3 +1,10 @@
+## [1.0.5](https://github.com/programisto-labs/edrm-mailer/compare/v1.0.4...v1.0.5) (2025-11-26)
+
+
+### Bug Fixes
+
+* add comment to semantic release step ([d89c7e6](https://github.com/programisto-labs/edrm-mailer/commit/d89c7e651471325f1110f6919b849bf4c270631c))
+
 ## [1.0.4](https://github.com/programisto-labs/edrm-mailer/compare/v1.0.3...v1.0.4) (2025-11-26)
 
 
