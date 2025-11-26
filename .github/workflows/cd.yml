@@ -38,6 +38,7 @@ jobs:
       - name: Build library
         run: npm run build
 
+      # Semantic release: publishes to npm and creates GitHub release
       - name: Semantic Release
         run: |
           if [ "$GITHUB_REF_NAME" = "main" ]; then
