@@ -11,7 +11,7 @@ class MailTemplate extends EnduranceSchema {
   @EnduranceModelType.prop({ required: true })
   public body!: string;
 
-  @EnduranceModelType.prop({ required: false, default: "global" })
+  @EnduranceModelType.prop({ required: false, default: 'global' })
   public category!: string;
 
   // Méthode statique pour trouver un template par son nom

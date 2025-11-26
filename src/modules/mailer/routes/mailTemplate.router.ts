@@ -201,8 +201,6 @@ class MailTemplateRouter extends EnduranceRouter {
         res.status(500).send('Erreur interne du serveur');
       }
     });
-
-
   }
 }
 
