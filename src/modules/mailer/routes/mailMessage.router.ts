@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import MailMessage from '../models/mailMessage.model.js';
-import { EnduranceRouter, SecurityOptions } from '@programisto/endurance-core';
+import { EnduranceRouter, SecurityOptions } from '@programisto/endurance';
 
 class MailMessageRouter extends EnduranceRouter {
   private transporter = nodemailer.createTransport({
@@ -23,6 +23,85 @@ class MailMessageRouter extends EnduranceRouter {
     };
 
     this.post('/:id/send', securityOptions, this.sendMail.bind(this));
+
+    // Lister tous les messages de mail
+    this.get('/', securityOptions, async (req: any, res: any) => {
+      try {
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 10;
+        const skip = (page - 1) * limit;
+        const search = req.query.search as string || '';
+        const template = req.query.template as string || 'all';
+        const from = req.query.from as string || 'all';
+        const to = req.query.to as string || 'all';
+        const sortBy = req.query.sortBy as string || 'updatedAt';
+        const sortOrder = req.query.sortOrder as string || 'desc';
+
+        // Construction de la requête de recherche
+        const query: any = {};
+
+        // Filtres
+        if (template !== 'all') {
+          query.template = template;
+        }
+        if (from !== 'all') {
+          query.from = from;
+        }
+        if (to !== 'all') {
+          query.to = to;
+        }
+
+        // Recherche sur sujet, destinataire, expéditeur et contenu
+        if (search) {
+          // Diviser la recherche en mots-clés
+          const keywords = search.split(/\s+/).filter(Boolean);
+
+          // Créer des expressions régulières pour chaque mot-clé
+          const regexPatterns = keywords.map(keyword =>
+            new RegExp(keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
+          );
+
+          query.$or = [
+            { subject: { $in: regexPatterns } },
+            { to: { $in: regexPatterns } },
+            { from: { $in: regexPatterns } },
+            { body: { $in: regexPatterns } }
+          ];
+        }
+
+        // Construction du tri
+        const sortOptions: Record<string, 1 | -1> = {
+          [sortBy]: sortOrder === 'asc' ? 1 : -1
+        };
+
+        const [messages, total] = await Promise.all([
+          MailMessage.find(query)
+            .populate('template', 'name subject category')
+            .sort(sortOptions)
+            .skip(skip)
+            .limit(limit)
+            .exec(),
+          MailMessage.countDocuments(query)
+        ]);
+
+        const totalPages = Math.ceil(total / limit);
+
+        return res.json({
+          data: messages,
+          pagination: {
+            currentPage: page,
+            totalPages,
+            totalItems: total,
+            itemsPerPage: limit,
+            hasNextPage: page < totalPages,
+            hasPreviousPage: page > 1
+          }
+        });
+      } catch (error) {
+        console.error('Erreur lors de la récupération des messages de mail:', error);
+        res.status(500).send('Erreur interne du serveur');
+      }
+    });
   }
 
   private async sendMail(req: any, res: any) {

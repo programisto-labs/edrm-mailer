@@ -1,4 +1,4 @@
-import { enduranceListener, enduranceEventTypes } from '@programisto/endurance-core';
+import { enduranceListener, enduranceEventTypes } from '@programisto/endurance';
 import nodemailer from 'nodemailer';
 import MailMessage from '../models/mailMessage.model.js';
 import MailTemplateModel from '../models/mailTemplate.model.js';
