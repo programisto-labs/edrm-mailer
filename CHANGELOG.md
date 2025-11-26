@@ -29,6 +29,18 @@
 
 * remove error when template ko ([b891fdc](https://github.com/programisto-labs/edrm-mailer/commit/b891fdcf4b45862b98945bc7436336cf9feef76e))
 * remove error when template ko ([a27f124](https://github.com/programisto-labs/edrm-mailer/commit/a27f1241cb1ed04803920b23da36c5da4c28493c))
+* upgrade to endurance ([6fa6f38](https://github.com/programisto-labs/edrm-mailer/commit/6fa6f38c3d363e34e6733d6ca86336a347e25193))
+* upgrade to endurance ([0e83f67](https://github.com/programisto-labs/edrm-mailer/commit/0e83f67406086f2223c86d9607bd588089fd367e))
+* upgrade to endurance ([9d56d29](https://github.com/programisto-labs/edrm-mailer/commit/9d56d2971c8f5ef4a146a360cc06cd724c39d0dc))
+* upgrade to endurance ([233d10e](https://github.com/programisto-labs/edrm-mailer/commit/233d10ed408ec69d582308b729056944b505b4d4))
+
+## [1.0.3](https://github.com/programisto-labs/edrm-mailer/compare/v1.0.2...v1.0.3) (2025-11-26)
+
+
+### Bug Fixes
+
+* remove error when template ko ([b891fdc](https://github.com/programisto-labs/edrm-mailer/commit/b891fdcf4b45862b98945bc7436336cf9feef76e))
+* remove error when template ko ([a27f124](https://github.com/programisto-labs/edrm-mailer/commit/a27f1241cb1ed04803920b23da36c5da4c28493c))
 * upgrade to endurance ([0e83f67](https://github.com/programisto-labs/edrm-mailer/commit/0e83f67406086f2223c86d9607bd588089fd367e))
 * upgrade to endurance ([9d56d29](https://github.com/programisto-labs/edrm-mailer/commit/9d56d2971c8f5ef4a146a360cc06cd724c39d0dc))
 * upgrade to endurance ([233d10e](https://github.com/programisto-labs/edrm-mailer/commit/233d10ed408ec69d582308b729056944b505b4d4))
