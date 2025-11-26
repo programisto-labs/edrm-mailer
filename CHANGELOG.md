@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/programisto-labs/edrm-mailer/compare/v1.0.3...v1.0.4) (2025-11-26)
+
+
+### Bug Fixes
+
+* skip version 1.0.3 already published on npm ([9dc25f0](https://github.com/programisto-labs/edrm-mailer/commit/9dc25f00eef99f49a5c06c0d96bbd6e0f32ee4a2))
+
 ## [1.0.3](https://github.com/programisto-labs/edrm-mailer/compare/v1.0.2...v1.0.3) (2025-11-26)
 
 
