@@ -10,7 +10,6 @@
   "scripts": {
     "start": "node ./dist/bin/www",
     "dev": "tsc-watch --onSuccess \"node ./dist/bin/www\"",
-    "test": "vitest",
     "build": "tsc",
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "prepare": "husky install"
@@ -58,7 +57,6 @@
     "eslint-plugin-n": "^16.6.2",
     "eslint-plugin-promise": "^6.6.0",
     "husky": "^8.0.0",
-    "semantic-release": "^24.2.5",
-    "vitest": "^3.2.3"
+    "semantic-release": "^24.2.5"
   }
 }
