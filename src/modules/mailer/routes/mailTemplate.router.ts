@@ -3,12 +3,17 @@ import MailTemplateModel from '../models/mailTemplate.model.js';
 
 class MailTemplateRouter extends EnduranceRouter {
   protected setupRoutes(): void {
-    const securityOptions: SecurityOptions = {
+    const mailTemplateSecurityOptions: SecurityOptions = {
       requireAuth: true,
       permissions: []
     };
 
-    this.get('/', securityOptions, async (req: any, res: any) => {
+    const mailTemplatePermission = process.env.EDRM_MAILER_MAIL_TEMPLATE_PERMISSION || '';
+    if (mailTemplatePermission) {
+      mailTemplateSecurityOptions.permissions?.push(mailTemplatePermission);
+    }
+
+    this.get('/', mailTemplateSecurityOptions, async (req: any, res: any) => {
       try {
         const page = parseInt(req.query.page as string) || 1;
         const limit = parseInt(req.query.limit as string) || 10;
@@ -77,7 +82,7 @@ class MailTemplateRouter extends EnduranceRouter {
     });
 
     // Récupérer le détail d'un template de mail
-    this.get('/:id', securityOptions, async (req: any, res: any) => {
+    this.get('/:id', mailTemplateSecurityOptions, async (req: any, res: any) => {
       try {
         const id = req.params.id;
         const template = await MailTemplateModel.findById(id);
@@ -94,7 +99,7 @@ class MailTemplateRouter extends EnduranceRouter {
     });
 
     // Créer un nouveau template de mail
-    this.post('/', securityOptions, async (req: any, res: any) => {
+    this.post('/', mailTemplateSecurityOptions, async (req: any, res: any) => {
       try {
         const { name, subject, body, category } = req.body;
 
@@ -129,7 +134,7 @@ class MailTemplateRouter extends EnduranceRouter {
     });
 
     // Mettre à jour un template de mail
-    this.put('/:id', securityOptions, async (req: any, res: any) => {
+    this.put('/:id', mailTemplateSecurityOptions, async (req: any, res: any) => {
       try {
         const id = req.params.id;
         const { name, subject, body, category } = req.body;
@@ -180,7 +185,7 @@ class MailTemplateRouter extends EnduranceRouter {
     });
 
     // Supprimer un template de mail
-    this.delete('/:id', securityOptions, async (req: any, res: any) => {
+    this.delete('/:id', mailTemplateSecurityOptions, async (req: any, res: any) => {
       try {
         const id = req.params.id;
 

@@ -6,8 +6,8 @@ class MailMessageRouter extends EnduranceRouter {
   private transporter = nodemailer.createTransport({
     host: 'smtp.office365.com',
     auth: {
-      user: process.env.EMAIL_USER || '',
-      pass: process.env.EMAIL_PASSWORD || ''
+      user: process.env.EDRM_MAILER_EMAIL_USER || '',
+      pass: process.env.EDRM_MAILER_EMAIL_PASSWORD || ''
     },
     port: 587,
     secure: false,
@@ -18,14 +18,20 @@ class MailMessageRouter extends EnduranceRouter {
   });
 
   protected setupRoutes(): void {
-    const securityOptions: SecurityOptions = {
-      permissions: ['canManageMailMessages']
+    const mailMessageSecurityOptions: SecurityOptions = {
+      requireAuth: true,
+      permissions: []
     };
 
-    this.post('/:id/send', securityOptions, this.sendMail.bind(this));
+    const mailMessagePermission = process.env.EDRM_MAILER_MAIL_MESSAGE_PERMISSION || '';
+    if (mailMessagePermission) {
+      mailMessageSecurityOptions.permissions?.push(mailMessagePermission);
+    }
+
+    this.post('/:id/send', mailMessageSecurityOptions, this.sendMail.bind(this));
 
     // Lister tous les messages de mail
-    this.get('/', securityOptions, async (req: any, res: any) => {
+    this.get('/', mailMessageSecurityOptions, async (req: any, res: any) => {
       try {
         const page = parseInt(req.query.page as string) || 1;
         const limit = parseInt(req.query.limit as string) || 10;
