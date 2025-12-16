@@ -1,3 +1,11 @@
+## [1.0.6](https://github.com/programisto-labs/edrm-mailer/compare/v1.0.5...v1.0.6) (2025-12-16)
+
+
+### Bug Fixes
+
+* fix permission and env vars ([764f18d](https://github.com/programisto-labs/edrm-mailer/commit/764f18d348fba750468fc7f9c98151550a24c4be))
+* fix tests ([3747c8c](https://github.com/programisto-labs/edrm-mailer/commit/3747c8ca6d0bc68a0d4fc4d421d949f4f936a512))
+
 ## [1.0.5](https://github.com/programisto-labs/edrm-mailer/compare/v1.0.4...v1.0.5) (2025-11-26)
 
 
