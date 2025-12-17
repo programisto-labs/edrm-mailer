@@ -1,21 +1,8 @@
-import nodemailer from 'nodemailer';
 import MailMessage from '../models/mailMessage.model.js';
 import { EnduranceRouter, SecurityOptions } from '@programisto/endurance';
+import { sendMailFromTemplate, resendMail as resendMailService, SendMailOptions } from '../services/mailer.service.js';
 
 class MailMessageRouter extends EnduranceRouter {
-  private transporter = nodemailer.createTransport({
-    host: 'smtp.office365.com',
-    auth: {
-      user: process.env.EDRM_MAILER_EMAIL_USER || '',
-      pass: process.env.EDRM_MAILER_EMAIL_PASSWORD || ''
-    },
-    port: 587,
-    secure: false,
-    tls: {
-      ciphers: 'HIGH',
-      rejectUnauthorized: false
-    }
-  });
 
   protected setupRoutes(): void {
     const mailMessageSecurityOptions: SecurityOptions = {
@@ -28,7 +15,11 @@ class MailMessageRouter extends EnduranceRouter {
       mailMessageSecurityOptions.permissions?.push(mailMessagePermission);
     }
 
-    this.post('/:id/send', mailMessageSecurityOptions, this.sendMail.bind(this));
+    // Route pour envoyer un email à partir d'un template (comme le listener)
+    this.post('/send', mailMessageSecurityOptions, this.sendMail.bind(this));
+
+    // Route pour renvoyer un email existant
+    this.post('/:id/resend', mailMessageSecurityOptions, this.resendMail.bind(this));
 
     // Lister tous les messages de mail
     this.get('/', mailMessageSecurityOptions, async (req: any, res: any) => {
@@ -110,44 +101,77 @@ class MailMessageRouter extends EnduranceRouter {
     });
   }
 
+  /**
+   * Route POST /send
+   * Envoie un email à partir d'un template (fonctionne comme le listener)
+   * Body attendu: { template: string, to: string, subject?: string, data: Record<string, any>, emailUser?: string, emailPassword?: string }
+   */
   private async sendMail(req: any, res: any) {
     try {
-      const mailMessage = await MailMessage.findById(req.params.id).populate('template');
-
-      if (!mailMessage) {
-        return res.status(404).json({ message: 'MailMessage not found' });
-      }
-
-      const mailOptions = {
-        from: mailMessage.from,
-        to: mailMessage.to,
-        subject: mailMessage.subject,
-        html: mailMessage.body || (mailMessage.template && mailMessage.template.body ? mailMessage.template.body : '')
+      const options: SendMailOptions = {
+        template: req.body.template,
+        to: req.body.to,
+        subject: req.body.subject,
+        data: req.body.data,
+        emailUser: req.body.emailUser,
+        emailPassword: req.body.emailPassword
       };
 
-      this.transporter.sendMail(mailOptions, async (error, info) => {
-        if (error) {
-          console.error(`Failed to send email: ${error.message}`, { error });
-          return res.status(500).json({ message: 'Failed to send email', error: error.message });
-        }
+      const result = await sendMailFromTemplate(options);
 
-        try {
-          mailMessage.sentAt = new Date();
-          await mailMessage.save();
-          res.json({ message: 'Email sent successfully', info });
-        } catch (saveError) {
-          if (saveError instanceof Error) {
-            console.error(`Failed to update mailMessage after sending email: ${saveError.message}`, { saveError });
-            res.status(500).json({ message: 'Email sent, but failed to update message status', error: saveError.message });
-          } else {
-            console.error('Unknown error occurred while updating mailMessage', { saveError });
-            res.status(500).json({ message: 'Email sent, but failed to update message status', error: 'Unknown error' });
-          }
-        }
+      if (!result.success) {
+        return res.status(400).json({
+          message: 'Failed to send email',
+          error: result.error
+        });
+      }
+
+      return res.json({
+        message: 'Email sent successfully',
+        mailMessageId: result.mailMessageId,
+        info: result.info
       });
     } catch (err) {
       if (err instanceof Error) {
         console.error(`Error processing email send request: ${err.message}`, { err });
+        res.status(500).json({ message: 'Internal server error', error: err.message });
+      } else {
+        console.error('Unknown error occurred', { err });
+        res.status(500).json({ message: 'Internal server error', error: 'Unknown error occurred' });
+      }
+    }
+  }
+
+  /**
+   * Route POST /:id/resend
+   * Renvoie un email existant
+   */
+  private async resendMail(req: any, res: any) {
+    try {
+      const result = await resendMailService(
+        req.params.id,
+        req.body.emailUser,
+        req.body.emailPassword
+      );
+
+      if (!result.success) {
+        if (result.error === 'MailMessage not found') {
+          return res.status(404).json({ message: result.error });
+        }
+        return res.status(500).json({
+          message: 'Failed to resend email',
+          error: result.error
+        });
+      }
+
+      return res.json({
+        message: 'Email resent successfully',
+        mailMessageId: result.mailMessageId,
+        info: result.info
+      });
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error(`Error processing email resend request: ${err.message}`, { err });
         res.status(500).json({ message: 'Internal server error', error: err.message });
       } else {
         console.error('Unknown error occurred', { err });
