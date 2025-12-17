@@ -3,7 +3,6 @@ import { EnduranceRouter, SecurityOptions } from '@programisto/endurance';
 import { sendMailFromTemplate, resendMail as resendMailService, SendMailOptions } from '../services/mailer.service.js';
 
 class MailMessageRouter extends EnduranceRouter {
-
   protected setupRoutes(): void {
     const mailMessageSecurityOptions: SecurityOptions = {
       requireAuth: true,

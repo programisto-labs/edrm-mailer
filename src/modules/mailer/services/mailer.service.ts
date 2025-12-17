@@ -10,7 +10,6 @@ export interface SendMailOptions {
     emailUser?: string;
     emailPassword?: string;
 }
-
 export interface SendMailResult {
     success: boolean;
     mailMessageId?: string;
@@ -275,4 +274,3 @@ export async function resendMail(mailMessageId: string, emailUser?: string, emai
         };
     }
 }
-
