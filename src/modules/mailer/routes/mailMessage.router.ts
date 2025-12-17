@@ -14,13 +14,145 @@ class MailMessageRouter extends EnduranceRouter {
       mailMessageSecurityOptions.permissions?.push(mailMessagePermission);
     }
 
-    // Route pour envoyer un email à partir d'un template (comme le listener)
+    /**
+     * @swagger
+     * /mail/send:
+     *   post:
+     *     summary: Envoyer un email depuis un template
+     *     description: Envoie un email en utilisant un template existant. Authentification requise.
+     *     tags: [Mail]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required: [template, to, data]
+     *             properties:
+     *               template:
+     *                 type: string
+     *                 description: Identifiant du template à utiliser
+     *               to:
+     *                 type: string
+     *                 description: Destinataire de l'email
+     *               subject:
+     *                 type: string
+     *                 description: Sujet personnalisé (écrase celui du template)
+     *               data:
+     *                 type: object
+     *                 additionalProperties: true
+     *                 description: Données utilisées pour le rendu du template
+     *               emailUser:
+     *                 type: string
+     *                 description: Identifiant SMTP à utiliser (optionnel)
+     *               emailPassword:
+     *                 type: string
+     *                 description: Mot de passe SMTP à utiliser (optionnel)
+     *     responses:
+     *       200:
+     *         description: Email envoyé
+     *       400:
+     *         description: Erreur de validation ou d'envoi
+     *       500:
+     *         description: Erreur serveur
+     */
     this.post('/send', mailMessageSecurityOptions, this.sendMail.bind(this));
 
-    // Route pour renvoyer un email existant
+    /**
+     * @swagger
+     * /mail/{id}/resend:
+     *   post:
+     *     summary: Renvoyer un email existant
+     *     description: Relance l'envoi d'un email déjà créé. Authentification requise.
+     *     tags: [Mail]
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: Identifiant du message à renvoyer
+     *     requestBody:
+     *       required: false
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               emailUser:
+     *                 type: string
+     *                 description: Identifiant SMTP à utiliser (optionnel)
+     *               emailPassword:
+     *                 type: string
+     *                 description: Mot de passe SMTP à utiliser (optionnel)
+     *     responses:
+     *       200:
+     *         description: Email renvoyé
+     *       404:
+     *         description: Message non trouvé
+     *       500:
+     *         description: Erreur serveur
+     */
     this.post('/:id/resend', mailMessageSecurityOptions, this.resendMail.bind(this));
 
-    // Lister tous les messages de mail
+    /**
+     * @swagger
+     * /mail:
+     *   get:
+     *     summary: Lister les messages envoyés
+     *     description: Récupère la liste paginée des messages email avec filtres, recherche et tri. Authentification requise.
+     *     tags: [Mail]
+     *     parameters:
+     *       - in: query
+     *         name: page
+     *         schema:
+     *           type: integer
+     *           default: 1
+     *       - in: query
+     *         name: limit
+     *         schema:
+     *           type: integer
+     *           default: 10
+     *       - in: query
+     *         name: search
+     *         schema:
+     *           type: string
+     *         description: Recherche sur sujet, destinataire, expéditeur et contenu
+     *       - in: query
+     *         name: template
+     *         schema:
+     *           type: string
+     *           default: all
+     *         description: Identifiant du template ou "all"
+     *       - in: query
+     *         name: from
+     *         schema:
+     *           type: string
+     *           default: all
+     *         description: Expéditeur ou "all"
+     *       - in: query
+     *         name: to
+     *         schema:
+     *           type: string
+     *           default: all
+     *         description: Destinataire ou "all"
+     *       - in: query
+     *         name: sortBy
+     *         schema:
+     *           type: string
+     *           default: updatedAt
+     *       - in: query
+     *         name: sortOrder
+     *         schema:
+     *           type: string
+     *           enum: [asc, desc]
+     *           default: desc
+     *     responses:
+     *       200:
+     *         description: Liste paginée des messages
+     *       500:
+     *         description: Erreur serveur
+     */
     this.get('/', mailMessageSecurityOptions, async (req: any, res: any) => {
       try {
         const page = parseInt(req.query.page as string) || 1;

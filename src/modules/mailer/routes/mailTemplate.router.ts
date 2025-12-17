@@ -13,6 +13,51 @@ class MailTemplateRouter extends EnduranceRouter {
       mailTemplateSecurityOptions.permissions?.push(mailTemplatePermission);
     }
 
+    /**
+     * @swagger
+     * /mailTemplate:
+     *   get:
+     *     summary: Lister les templates d'email
+     *     description: Récupère la liste paginée des templates avec filtres, recherche et tri. Authentification requise.
+     *     tags: [MailTemplate]
+     *     parameters:
+     *       - in: query
+     *         name: page
+     *         schema:
+     *           type: integer
+     *           default: 1
+     *       - in: query
+     *         name: limit
+     *         schema:
+     *           type: integer
+     *           default: 10
+     *       - in: query
+     *         name: search
+     *         schema:
+     *           type: string
+     *         description: Recherche sur nom, sujet et catégorie
+     *       - in: query
+     *         name: category
+     *         schema:
+     *           type: string
+     *           default: all
+     *       - in: query
+     *         name: sortBy
+     *         schema:
+     *           type: string
+     *           default: updatedAt
+     *       - in: query
+     *         name: sortOrder
+     *         schema:
+     *           type: string
+     *           enum: [asc, desc]
+     *           default: desc
+     *     responses:
+     *       200:
+     *         description: Liste paginée des templates
+     *       500:
+     *         description: Erreur serveur
+     */
     this.get('/', mailTemplateSecurityOptions, async (req: any, res: any) => {
       try {
         const page = parseInt(req.query.page as string) || 1;
@@ -81,6 +126,28 @@ class MailTemplateRouter extends EnduranceRouter {
       }
     });
 
+    /**
+     * @swagger
+     * /mailTemplate/{id}:
+     *   get:
+     *     summary: Récupérer un template
+     *     description: Renvoie le détail d'un template par son identifiant. Authentification requise.
+     *     tags: [MailTemplate]
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: Identifiant du template
+     *     responses:
+     *       200:
+     *         description: Détail du template
+     *       404:
+     *         description: Template non trouvé
+     *       500:
+     *         description: Erreur serveur
+     */
     // Récupérer le détail d'un template de mail
     this.get('/:id', mailTemplateSecurityOptions, async (req: any, res: any) => {
       try {
@@ -98,6 +165,40 @@ class MailTemplateRouter extends EnduranceRouter {
       }
     });
 
+    /**
+     * @swagger
+     * /mailTemplate:
+     *   post:
+     *     summary: Créer un template d'email
+     *     description: Crée un nouveau template après validation des champs requis. Authentification requise.
+     *     tags: [MailTemplate]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required: [name, subject, body]
+     *             properties:
+     *               name:
+     *                 type: string
+     *               subject:
+     *                 type: string
+     *               body:
+     *                 type: string
+     *               category:
+     *                 type: string
+     *                 default: global
+     *     responses:
+     *       201:
+     *         description: Template créé
+     *       400:
+     *         description: Champs requis manquants
+     *       409:
+     *         description: Doublon sur le nom
+     *       500:
+     *         description: Erreur serveur
+     */
     // Créer un nouveau template de mail
     this.post('/', mailTemplateSecurityOptions, async (req: any, res: any) => {
       try {
@@ -133,6 +234,49 @@ class MailTemplateRouter extends EnduranceRouter {
       }
     });
 
+    /**
+     * @swagger
+     * /mailTemplate/{id}:
+     *   put:
+     *     summary: Mettre à jour un template d'email
+     *     description: Met à jour un template existant après validation des données. Authentification requise.
+     *     tags: [MailTemplate]
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: Identifiant du template à mettre à jour
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required: [name, subject, body]
+     *             properties:
+     *               name:
+     *                 type: string
+     *               subject:
+     *                 type: string
+     *               body:
+     *                 type: string
+     *               category:
+     *                 type: string
+     *                 default: global
+     *     responses:
+     *       200:
+     *         description: Template mis à jour
+     *       400:
+     *         description: Champs requis manquants
+     *       404:
+     *         description: Template non trouvé
+     *       409:
+     *         description: Conflit sur le nom
+     *       500:
+     *         description: Erreur serveur
+     */
     // Mettre à jour un template de mail
     this.put('/:id', mailTemplateSecurityOptions, async (req: any, res: any) => {
       try {
@@ -184,6 +328,28 @@ class MailTemplateRouter extends EnduranceRouter {
       }
     });
 
+    /**
+     * @swagger
+     * /mailTemplate/{id}:
+     *   delete:
+     *     summary: Supprimer un template d'email
+     *     description: Supprime un template après vérification de son existence. Authentification requise.
+     *     tags: [MailTemplate]
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: Identifiant du template à supprimer
+     *     responses:
+     *       204:
+     *         description: Template supprimé
+     *       404:
+     *         description: Template non trouvé
+     *       500:
+     *         description: Erreur serveur
+     */
     // Supprimer un template de mail
     this.delete('/:id', mailTemplateSecurityOptions, async (req: any, res: any) => {
       try {
