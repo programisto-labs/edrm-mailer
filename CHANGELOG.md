@@ -1,3 +1,10 @@
+## [1.0.8](https://github.com/programisto-labs/edrm-mailer/compare/v1.0.7...v1.0.8) (2025-12-17)
+
+
+### Bug Fixes
+
+* keep comments ([8b7e3be](https://github.com/programisto-labs/edrm-mailer/commit/8b7e3be1fe50d42b5f042f8e4b620ad077621356))
+
 ## [1.0.7](https://github.com/programisto-labs/edrm-mailer/compare/v1.0.6...v1.0.7) (2025-12-17)
 
 
