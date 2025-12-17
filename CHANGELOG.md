@@ -1,3 +1,10 @@
+## [1.0.9](https://github.com/programisto-labs/edrm-mailer/compare/v1.0.8...v1.0.9) (2025-12-17)
+
+
+### Bug Fixes
+
+* add swagger desc ([781342f](https://github.com/programisto-labs/edrm-mailer/commit/781342f69f70f3d9c7034514cd1ffbfda8d8b365))
+
 ## [1.0.8](https://github.com/programisto-labs/edrm-mailer/compare/v1.0.7...v1.0.8) (2025-12-17)
 
 
