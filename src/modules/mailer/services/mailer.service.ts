@@ -9,7 +9,11 @@ export interface SendMailOptions {
     data?: Record<string, any>;
     emailUser?: string;
     emailPassword?: string;
-    attachmentFileIds?: string[];
+    attachmentUrls?: Array<{
+        url: string;
+        filename?: string;
+        contentType?: string;
+    }>;
 }
 export interface SendMailResult {
     success: boolean;
@@ -130,57 +134,25 @@ export async function sendMailFromTemplate(options: SendMailOptions): Promise<Se
 
         await newMailMessage.save();
 
-        // Préparer les pièces jointes si des fileIds sont fournis
+        // Préparer les pièces jointes si des URLs sont fournies
         const attachments: Array<{
-            filename: string;
-            content: Buffer;
+            filename?: string;
+            href: string;
             contentType?: string;
         }> = [];
-        if (options.attachmentFileIds && Array.isArray(options.attachmentFileIds) && options.attachmentFileIds.length > 0) {
-            try {
-                const apiBaseUrl = process.env.API_BASE_URL || process.env.EDRM_MAILER_API_BASE_URL || 'http://localhost:3000';
-
-                for (const fileId of options.attachmentFileIds) {
-                    try {
-                        // Télécharger le fichier depuis edrm-storage
-                        const downloadResponse = await fetch(`${apiBaseUrl}/edrm-storage/files/${fileId}/download`);
-
-                        if (!downloadResponse.ok) {
-                            console.warn(`Failed to download file ${fileId} for attachment: ${downloadResponse.statusText}`);
-                            continue;
-                        }
-
-                        const downloadData = await downloadResponse.json();
-
-                        if (downloadData.success && downloadData.data) {
-                            // Si l'API retourne une URL, télécharger depuis cette URL
-                            if (downloadData.data.url) {
-                                const fileResponse = await fetch(downloadData.data.url);
-                                if (fileResponse.ok) {
-                                    const fileBuffer = Buffer.from(await fileResponse.arrayBuffer());
-                                    attachments.push({
-                                        filename: downloadData.data.filename || downloadData.data.originalName || `attachment-${fileId}`,
-                                        content: fileBuffer,
-                                        contentType: downloadData.data.contentType || downloadData.data.mimeType || 'application/octet-stream'
-                                    });
-                                    console.log(`Attachment added successfully: ${downloadData.data.filename || downloadData.data.originalName || fileId}`);
-                                } else {
-                                    console.warn(`Failed to download file from URL for ${fileId}`);
-                                }
-                            } else {
-                                console.warn(`No URL provided for file ${fileId}`);
-                            }
-                        } else {
-                            console.warn(`Invalid response format for file ${fileId}`);
-                        }
-                    } catch (fileError) {
-                        console.error(`Error processing attachment file ${fileId}:`, fileError);
-                        // Continue avec les autres fichiers même si un échoue
-                    }
+        if (options.attachmentUrls && Array.isArray(options.attachmentUrls) && options.attachmentUrls.length > 0) {
+            console.log(`Processing ${options.attachmentUrls.length} attachment(s) from URLs`);
+            for (const attachment of options.attachmentUrls) {
+                if (attachment.url) {
+                    attachments.push({
+                        href: attachment.url,
+                        filename: attachment.filename,
+                        contentType: attachment.contentType
+                    });
+                    console.log(`Attachment added: ${attachment.filename || attachment.url}`);
+                } else {
+                    console.warn('Skipping attachment with missing URL');
                 }
-            } catch (attachmentError) {
-                console.error('Error processing attachments:', attachmentError);
-                // Continue l'envoi de l'email même si les pièces jointes échouent
             }
         }
 
