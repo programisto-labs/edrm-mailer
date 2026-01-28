@@ -1,3 +1,10 @@
+## [1.0.11](https://github.com/programisto-labs/edrm-mailer/compare/v1.0.10...v1.0.11) (2026-01-28)
+
+
+### Bug Fixes
+
+* use url instead of file ids ([93d5be9](https://github.com/programisto-labs/edrm-mailer/commit/93d5be90ab4af0d32f1cbd6b6fa6fc8a9d1dbc7c))
+
 ## [1.0.10](https://github.com/programisto-labs/edrm-mailer/compare/v1.0.9...v1.0.10) (2026-01-28)
 
 
