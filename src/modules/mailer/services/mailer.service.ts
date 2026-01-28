@@ -9,6 +9,7 @@ export interface SendMailOptions {
     data?: Record<string, any>;
     emailUser?: string;
     emailPassword?: string;
+    attachmentFileIds?: string[];
 }
 export interface SendMailResult {
     success: boolean;
@@ -129,14 +130,73 @@ export async function sendMailFromTemplate(options: SendMailOptions): Promise<Se
 
         await newMailMessage.save();
 
+        // Préparer les pièces jointes si des fileIds sont fournis
+        const attachments: Array<{
+            filename: string;
+            content: Buffer;
+            contentType?: string;
+        }> = [];
+        if (options.attachmentFileIds && Array.isArray(options.attachmentFileIds) && options.attachmentFileIds.length > 0) {
+            try {
+                const apiBaseUrl = process.env.API_BASE_URL || process.env.EDRM_MAILER_API_BASE_URL || 'http://localhost:3000';
+
+                for (const fileId of options.attachmentFileIds) {
+                    try {
+                        // Télécharger le fichier depuis edrm-storage
+                        const downloadResponse = await fetch(`${apiBaseUrl}/edrm-storage/files/${fileId}/download`);
+
+                        if (!downloadResponse.ok) {
+                            console.warn(`Failed to download file ${fileId} for attachment: ${downloadResponse.statusText}`);
+                            continue;
+                        }
+
+                        const downloadData = await downloadResponse.json();
+
+                        if (downloadData.success && downloadData.data) {
+                            // Si l'API retourne une URL, télécharger depuis cette URL
+                            if (downloadData.data.url) {
+                                const fileResponse = await fetch(downloadData.data.url);
+                                if (fileResponse.ok) {
+                                    const fileBuffer = Buffer.from(await fileResponse.arrayBuffer());
+                                    attachments.push({
+                                        filename: downloadData.data.filename || downloadData.data.originalName || `attachment-${fileId}`,
+                                        content: fileBuffer,
+                                        contentType: downloadData.data.contentType || downloadData.data.mimeType || 'application/octet-stream'
+                                    });
+                                    console.log(`Attachment added successfully: ${downloadData.data.filename || downloadData.data.originalName || fileId}`);
+                                } else {
+                                    console.warn(`Failed to download file from URL for ${fileId}`);
+                                }
+                            } else {
+                                console.warn(`No URL provided for file ${fileId}`);
+                            }
+                        } else {
+                            console.warn(`Invalid response format for file ${fileId}`);
+                        }
+                    } catch (fileError) {
+                        console.error(`Error processing attachment file ${fileId}:`, fileError);
+                        // Continue avec les autres fichiers même si un échoue
+                    }
+                }
+            } catch (attachmentError) {
+                console.error('Error processing attachments:', attachmentError);
+                // Continue l'envoi de l'email même si les pièces jointes échouent
+            }
+        }
+
         // Envoi de l'email
         const transporter = createTransporter(emailUser, emailPassword);
-        const mailOptions = {
+        const mailOptions: nodemailer.SendMailOptions = {
             from: newMailMessage.from,
             to: newMailMessage.to,
             subject: newMailMessage.subject,
-            html: newMailMessage.body
+            html: newMailMessage.body,
+            attachments: attachments.length > 0 ? attachments : undefined
         };
+
+        if (attachments.length > 0) {
+            console.log(`Sending email with ${attachments.length} attachment(s)`);
+        }
 
         return new Promise<SendMailResult>((resolve) => {
             transporter.sendMail(mailOptions, async (error, info) => {
@@ -226,7 +286,7 @@ export async function resendMail(mailMessageId: string, emailUser?: string, emai
         }
 
         const transporter = createTransporter(user, pass);
-        const mailOptions = {
+        const mailOptions: nodemailer.SendMailOptions = {
             from: mailMessage.from,
             to: mailMessage.to,
             subject: mailMessage.subject,
