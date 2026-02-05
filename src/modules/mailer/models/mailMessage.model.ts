@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import { EnduranceSchema, EnduranceModelType } from '@programisto/endurance';
 
 class MailMessage extends EnduranceSchema {
@@ -18,6 +19,10 @@ class MailMessage extends EnduranceSchema {
 
   @EnduranceModelType.prop({ default: null })
   public sentAt?: Date;
+
+  /** Identifiant de l'entité (portail multi-entités). Optionnel pour rétrocompatibilité. */
+  @EnduranceModelType.prop({ required: false })
+  public entityId?: Types.ObjectId;
 }
 
 // Export du modèle directement utilisable

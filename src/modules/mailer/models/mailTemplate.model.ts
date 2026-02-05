@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import { EnduranceSchema, EnduranceModelType } from '@programisto/endurance';
 import { ReturnModelType } from '@typegoose/typegoose';
 
@@ -13,6 +14,10 @@ class MailTemplate extends EnduranceSchema {
 
   @EnduranceModelType.prop({ required: false, default: 'global' })
   public category!: string;
+
+  /** Identifiant de l'entité (portail multi-entités). Optionnel pour rétrocompatibilité. */
+  @EnduranceModelType.prop({ required: false })
+  public entityId?: Types.ObjectId;
 
   // Méthode statique pour trouver un template par son nom
   static async findByName(this: ReturnModelType<typeof MailTemplate>, name: string) {

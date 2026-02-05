@@ -71,6 +71,10 @@ class MailTemplateRouter extends EnduranceRouter {
         // Construction de la requête de recherche
         const query: any = {};
 
+        if (req.entity?._id) {
+          query.entityId = req.entity._id;
+        }
+
         // Filtres
         if (category !== 'all') {
           query.category = category;
@@ -157,6 +161,9 @@ class MailTemplateRouter extends EnduranceRouter {
         if (!template) {
           return res.status(404).json({ message: 'Template de mail non trouvé' });
         }
+        if (req.entity?._id && (template as any).entityId && !(template as any).entityId.equals(req.entity._id)) {
+          return res.status(404).json({ message: 'Template de mail non trouvé' });
+        }
 
         return res.json(template);
       } catch (error) {
@@ -211,8 +218,10 @@ class MailTemplateRouter extends EnduranceRouter {
           });
         }
 
-        // Vérifier si un template avec le même nom existe déjà
-        const existingTemplate = await MailTemplateModel.findOne({ name });
+        // Vérifier si un template avec le même nom existe déjà (dans le même contexte entité)
+        const nameQuery: any = { name };
+        if (req.entity?._id) nameQuery.entityId = req.entity._id;
+        const existingTemplate = await MailTemplateModel.findOne(nameQuery);
         if (existingTemplate) {
           return res.status(409).json({
             message: 'Un template avec ce nom existe déjà'
@@ -223,7 +232,8 @@ class MailTemplateRouter extends EnduranceRouter {
           name,
           subject,
           body,
-          category: category || 'global'
+          category: category || 'global',
+          ...(req.entity?._id && { entityId: req.entity._id })
         });
 
         const savedTemplate = await newTemplate.save();
@@ -297,12 +307,14 @@ class MailTemplateRouter extends EnduranceRouter {
             message: 'Template de mail non trouvé'
           });
         }
+        if (req.entity?._id && (existingTemplate as any).entityId && !(existingTemplate as any).entityId.equals(req.entity._id)) {
+          return res.status(404).json({ message: 'Template de mail non trouvé' });
+        }
 
-        // Vérifier si un autre template avec le même nom existe déjà
-        const duplicateTemplate = await MailTemplateModel.findOne({
-          name,
-          _id: { $ne: id }
-        });
+        // Vérifier si un autre template avec le même nom existe déjà (même contexte entité)
+        const duplicateQuery: any = { name, _id: { $ne: id } };
+        if (req.entity?._id) duplicateQuery.entityId = req.entity._id;
+        const duplicateTemplate = await MailTemplateModel.findOne(duplicateQuery);
         if (duplicateTemplate) {
           return res.status(409).json({
             message: 'Un template avec ce nom existe déjà'
@@ -361,6 +373,9 @@ class MailTemplateRouter extends EnduranceRouter {
           return res.status(404).json({
             message: 'Template de mail non trouvé'
           });
+        }
+        if (req.entity?._id && (existingTemplate as any).entityId && !(existingTemplate as any).entityId.equals(req.entity._id)) {
+          return res.status(404).json({ message: 'Template de mail non trouvé' });
         }
 
         // Supprimer le template

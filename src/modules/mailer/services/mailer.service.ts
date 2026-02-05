@@ -9,6 +9,8 @@ export interface SendMailOptions {
     data?: Record<string, any>;
     emailUser?: string;
     emailPassword?: string;
+    /** Identifiant de l'entité (portail multi-entités). Optionnel. */
+    entityId?: import('mongoose').Types.ObjectId;
     attachmentUrls?: Array<{
         url: string;
         filename?: string;
@@ -129,7 +131,8 @@ export async function sendMailFromTemplate(options: SendMailOptions): Promise<Se
             to: options.to,
             from: emailUser,
             subject: options.subject || template.subject,
-            body: processedBody
+            body: processedBody,
+            ...(options.entityId && { entityId: options.entityId })
         });
 
         await newMailMessage.save();
