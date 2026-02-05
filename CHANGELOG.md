@@ -1,3 +1,10 @@
+## [1.0.12](https://github.com/programisto-labs/edrm-mailer/compare/v1.0.11...v1.0.12) (2026-02-05)
+
+
+### Bug Fixes
+
+* handle multi entity ([84f6a7f](https://github.com/programisto-labs/edrm-mailer/commit/84f6a7fb2abf19f8716f5ca36de4e929e6e6399d))
+
 ## [1.0.11](https://github.com/programisto-labs/edrm-mailer/compare/v1.0.10...v1.0.11) (2026-01-28)
 
 
