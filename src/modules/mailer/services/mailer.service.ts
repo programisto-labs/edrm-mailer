@@ -92,10 +92,26 @@ export async function sendMailFromTemplate(options: SendMailOptions): Promise<Se
             };
         }
 
-        // Recherche du template
+        // Recherche du template (scopé par entité si entityId fourni)
         let template;
         try {
-            template = await MailTemplateModel.findOne({ name: options.template });
+            if (options.entityId) {
+                // Chercher d'abord le template de l'entité
+                template = await MailTemplateModel.findOne({
+                    name: options.template,
+                    entityId: options.entityId
+                });
+            }
+            if (!template) {
+                // Fallback : template global (sans entityId) ou recherche simple par nom
+                template = await MailTemplateModel.findOne({
+                    name: options.template,
+                    $or: [
+                        { entityId: null },
+                        { entityId: { $exists: false } }
+                    ]
+                }) || await MailTemplateModel.findOne({ name: options.template });
+            }
         } catch (templateError) {
             return {
                 success: false,
