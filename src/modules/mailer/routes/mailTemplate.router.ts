@@ -69,33 +69,45 @@ class MailTemplateRouter extends EnduranceRouter {
         const sortOrder = req.query.sortOrder as string || 'desc';
 
         // Construction de la requête de recherche
-        const query: any = {};
+        const conditions: any[] = [];
 
+        // Filtre entité : pour l'entité par défaut, inclure les templates sans entityId (historiques)
         if (req.entity?._id) {
-          query.entityId = req.entity._id;
+          const entityId = req.entity._id;
+          const isDefault = (req.entity as any).isDefault === true;
+          if (isDefault) {
+            conditions.push({
+              $or: [
+                { entityId },
+                { entityId: entityId.toString?.() ?? entityId },
+                { entityId: null },
+                { entityId: { $exists: false } }
+              ]
+            });
+          } else {
+            conditions.push({ entityId });
+          }
         }
 
-        // Filtres
         if (category !== 'all') {
-          query.category = category;
+          conditions.push({ category });
         }
 
-        // Recherche sur nom, sujet et catégorie
         if (search) {
-          // Diviser la recherche en mots-clés
           const keywords = search.split(/\s+/).filter(Boolean);
-
-          // Créer des expressions régulières pour chaque mot-clé
           const regexPatterns = keywords.map(keyword =>
             new RegExp(keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
           );
-
-          query.$or = [
-            { name: { $in: regexPatterns } },
-            { subject: { $in: regexPatterns } },
-            { category: { $in: regexPatterns } }
-          ];
+          conditions.push({
+            $or: [
+              { name: { $in: regexPatterns } },
+              { subject: { $in: regexPatterns } },
+              { category: { $in: regexPatterns } }
+            ]
+          });
         }
+
+        const query = conditions.length === 1 ? conditions[0] : conditions.length > 1 ? { $and: conditions } : {};
 
         // Construction du tri
         const sortOptions: Record<string, 1 | -1> = {
