@@ -1,3 +1,10 @@
+## [1.0.15](https://github.com/programisto-labs/edrm-mailer/compare/v1.0.14...v1.0.15) (2026-02-11)
+
+
+### Bug Fixes
+
+* template by entity ([8a42f9c](https://github.com/programisto-labs/edrm-mailer/commit/8a42f9cb211fee5e9bd14e8bc080830c36d9c02f))
+
 ## [1.0.14](https://github.com/programisto-labs/edrm-mailer/compare/v1.0.13...v1.0.14) (2026-02-11)
 
 
