@@ -3,7 +3,7 @@ import { EnduranceSchema, EnduranceModelType } from '@programisto/endurance';
 import { ReturnModelType } from '@typegoose/typegoose';
 
 class MailTemplate extends EnduranceSchema {
-  @EnduranceModelType.prop({ required: true, unique: true })
+  @EnduranceModelType.prop({ required: true })
   public name!: string;
 
   @EnduranceModelType.prop({ required: true })
@@ -27,4 +27,6 @@ class MailTemplate extends EnduranceSchema {
 
 // Génération du modèle et export
 const MailTemplateModel = MailTemplate.getModel();
+// Index composé unique : unicité du nom par entité (multi-entités)
+MailTemplateModel.schema.index({ entityId: 1, name: 1 }, { unique: true });
 export default MailTemplateModel;

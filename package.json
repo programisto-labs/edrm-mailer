@@ -13,7 +13,8 @@
     "test": "echo \"Tests skipped\"",
     "build": "tsc",
     "lint": "eslint \"**/*.{ts,tsx}\"",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "migrate:mailtemplate-index": "node ./dist/scripts/migrate-mailtemplate-index.js"
   },
   "repositoryUrl": "https://github.com/programisto-labs/edrm-mailer.git",
   "author": "",
