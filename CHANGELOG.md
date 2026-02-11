@@ -1,3 +1,10 @@
+## [1.0.14](https://github.com/programisto-labs/edrm-mailer/compare/v1.0.13...v1.0.14) (2026-02-11)
+
+
+### Bug Fixes
+
+* fix index ([a8feee1](https://github.com/programisto-labs/edrm-mailer/commit/a8feee1a993d4bd340a223853888ac0ec6c13467))
+
 ## [1.0.13](https://github.com/programisto-labs/edrm-mailer/compare/v1.0.12...v1.0.13) (2026-02-11)
 
 
