@@ -1,3 +1,10 @@
+## [1.0.13](https://github.com/programisto-labs/edrm-mailer/compare/v1.0.12...v1.0.13) (2026-02-11)
+
+
+### Bug Fixes
+
+* default entity ([07455f6](https://github.com/programisto-labs/edrm-mailer/commit/07455f60f34a496aee933d7ce806c5df2382a690))
+
 ## [1.0.12](https://github.com/programisto-labs/edrm-mailer/compare/v1.0.11...v1.0.12) (2026-02-05)
 
 
