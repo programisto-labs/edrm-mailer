@@ -1,5 +1,37 @@
-import { EnduranceRouter, SecurityOptions } from '@programisto/endurance';
+import { EnduranceRouter, SecurityOptions, EnduranceAuthMiddleware } from '@programisto/endurance';
 import MailTemplateModel from '../models/mailTemplate.model.js';
+
+/**
+ * Templates not scoped to a tenant `entityId` (product-level / cross-tenant).
+ * Host apps choose names and seed content; edrm-mailer only enforces access control on this category.
+ */
+export const PLATFORM_MAIL_TEMPLATE_CATEGORY = 'platform-mail';
+
+const DEFAULT_PLATFORM_MAIL_TEMPLATE_PERMISSION = 'AdminPlatformMailTemplates_Access';
+
+function resolvedPlatformMailTemplatePermission(): string {
+  const fromEnv = (process.env.EDRM_MAILER_PLATFORM_MAIL_TEMPLATE_PERMISSION || '').trim();
+  return fromEnv || DEFAULT_PLATFORM_MAIL_TEMPLATE_PERMISSION;
+}
+
+function isPlatformMailTemplateCategory(category: string | undefined | null): boolean {
+  return category === PLATFORM_MAIL_TEMPLATE_CATEGORY;
+}
+
+/** Superadmin (edrm-user) always allowed; otherwise requires the configured permission. */
+async function canManagePlatformMailTemplates(req: any): Promise<boolean> {
+  const perm = resolvedPlatformMailTemplatePermission();
+  try {
+    const inst = EnduranceAuthMiddleware.getInstance();
+    const ac = inst?.accessControl as
+      | { hasPermission?: (permissions: string[], req: any) => Promise<boolean> }
+      | undefined;
+    if (!ac?.hasPermission) return false;
+    return await ac.hasPermission([perm], req);
+  } catch {
+    return false;
+  }
+}
 
 class MailTemplateRouter extends EnduranceRouter {
   protected setupRoutes(): void {
@@ -70,6 +102,11 @@ class MailTemplateRouter extends EnduranceRouter {
 
         // Construction de la requête de recherche
         const conditions: any[] = [];
+
+        const showPlatformMailTemplates = await canManagePlatformMailTemplates(req);
+        if (!showPlatformMailTemplates) {
+          conditions.push({ category: { $ne: PLATFORM_MAIL_TEMPLATE_CATEGORY } });
+        }
 
         // Filtre entité : pour l'entité par défaut, inclure les templates sans entityId (historiques)
         if (req.entity?._id) {
@@ -173,6 +210,12 @@ class MailTemplateRouter extends EnduranceRouter {
         if (!template) {
           return res.status(404).json({ message: 'Template de mail non trouvé' });
         }
+        if (
+          isPlatformMailTemplateCategory((template as any).category) &&
+          !(await canManagePlatformMailTemplates(req))
+        ) {
+          return res.status(404).json({ message: 'Template de mail non trouvé' });
+        }
         if (req.entity?._id && (template as any).entityId && !(template as any).entityId.equals(req.entity._id)) {
           return res.status(404).json({ message: 'Template de mail non trouvé' });
         }
@@ -230,9 +273,21 @@ class MailTemplateRouter extends EnduranceRouter {
           });
         }
 
+        const cat = category || 'global';
+        if (isPlatformMailTemplateCategory(cat) && !(await canManagePlatformMailTemplates(req))) {
+          return res.status(403).json({
+            message:
+              'Catégorie réservée : templates sans périmètre entité (permission dédiée ou superadmin requis).'
+          });
+        }
+
         // Vérifier si un template avec le même nom existe déjà (dans le même contexte entité)
         const nameQuery: any = { name };
-        if (req.entity?._id) nameQuery.entityId = req.entity._id;
+        if (isPlatformMailTemplateCategory(cat)) {
+          nameQuery.$or = [{ entityId: null }, { entityId: { $exists: false } }];
+        } else if (req.entity?._id) {
+          nameQuery.entityId = req.entity._id;
+        }
         const existingTemplate = await MailTemplateModel.findOne(nameQuery);
         if (existingTemplate) {
           return res.status(409).json({
@@ -244,8 +299,10 @@ class MailTemplateRouter extends EnduranceRouter {
           name,
           subject,
           body,
-          category: category || 'global',
-          ...(req.entity?._id && { entityId: req.entity._id })
+          category: cat,
+          ...(isPlatformMailTemplateCategory(cat)
+            ? {}
+            : req.entity?._id && { entityId: req.entity._id })
         });
 
         const savedTemplate = await newTemplate.save();
@@ -319,13 +376,23 @@ class MailTemplateRouter extends EnduranceRouter {
             message: 'Template de mail non trouvé'
           });
         }
+        const cat = category || 'global';
+        const wasPlatformMail = isPlatformMailTemplateCategory((existingTemplate as any).category);
+        const willPlatformMail = isPlatformMailTemplateCategory(cat);
+        if ((wasPlatformMail || willPlatformMail) && !(await canManagePlatformMailTemplates(req))) {
+          return res.status(404).json({ message: 'Template de mail non trouvé' });
+        }
         if (req.entity?._id && (existingTemplate as any).entityId && !(existingTemplate as any).entityId.equals(req.entity._id)) {
           return res.status(404).json({ message: 'Template de mail non trouvé' });
         }
 
         // Vérifier si un autre template avec le même nom existe déjà (même contexte entité)
         const duplicateQuery: any = { name, _id: { $ne: id } };
-        if (req.entity?._id) duplicateQuery.entityId = req.entity._id;
+        if (isPlatformMailTemplateCategory(cat)) {
+          duplicateQuery.$or = [{ entityId: null }, { entityId: { $exists: false } }];
+        } else if (req.entity?._id) {
+          duplicateQuery.entityId = req.entity._id;
+        }
         const duplicateTemplate = await MailTemplateModel.findOne(duplicateQuery);
         if (duplicateTemplate) {
           return res.status(409).json({
@@ -334,16 +401,16 @@ class MailTemplateRouter extends EnduranceRouter {
         }
 
         // Mettre à jour le template
-        const updatedTemplate = await MailTemplateModel.findByIdAndUpdate(
-          id,
-          {
-            name,
-            subject,
-            body,
-            category: category || 'global'
-          },
-          { new: true, runValidators: true }
-        );
+        const updatePayload: Record<string, unknown> = {
+          $set: { name, subject, body, category: cat }
+        };
+        if (willPlatformMail) {
+          (updatePayload as any).$unset = { entityId: 1 };
+        }
+        const updatedTemplate = await MailTemplateModel.findByIdAndUpdate(id, updatePayload, {
+          new: true,
+          runValidators: true
+        });
 
         return res.json(updatedTemplate);
       } catch (error) {
@@ -385,6 +452,12 @@ class MailTemplateRouter extends EnduranceRouter {
           return res.status(404).json({
             message: 'Template de mail non trouvé'
           });
+        }
+        if (
+          isPlatformMailTemplateCategory((existingTemplate as any).category) &&
+          !(await canManagePlatformMailTemplates(req))
+        ) {
+          return res.status(404).json({ message: 'Template de mail non trouvé' });
         }
         if (req.entity?._id && (existingTemplate as any).entityId && !(existingTemplate as any).entityId.equals(req.entity._id)) {
           return res.status(404).json({ message: 'Template de mail non trouvé' });

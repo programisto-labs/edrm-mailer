@@ -103,14 +103,14 @@ export async function sendMailFromTemplate(options: SendMailOptions): Promise<Se
                 });
             }
             if (!template) {
-                // Fallback : template global (sans entityId) ou recherche simple par nom
+                // Sans entityId : uniquement les templates globaux (pas un document scoping autre entité).
                 template = await MailTemplateModel.findOne({
                     name: options.template,
                     $or: [
                         { entityId: null },
                         { entityId: { $exists: false } }
                     ]
-                }) || await MailTemplateModel.findOne({ name: options.template });
+                });
             }
         } catch (templateError) {
             return {
