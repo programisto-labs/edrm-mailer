@@ -1,3 +1,10 @@
+## [1.0.16](https://github.com/programisto-labs/edrm-mailer/compare/v1.0.15...v1.0.16) (2026-03-24)
+
+
+### Bug Fixes
+
+* add platform emails ([707e2a5](https://github.com/programisto-labs/edrm-mailer/commit/707e2a5a46e36e27cc2b4423cbe57b5e2ccdfb9a))
+
 ## [1.0.15](https://github.com/programisto-labs/edrm-mailer/compare/v1.0.14...v1.0.15) (2026-02-11)
 
 
