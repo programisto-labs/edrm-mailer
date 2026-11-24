@@ -168,9 +168,11 @@ class MailMessageRouter extends EnduranceRouter {
         // Construction de la requête de recherche
         const query: any = {};
 
-        if (req.entity?._id) {
-          query.entityId = req.entity._id;
+        // Messages de l'entité de la requête seulement ; sans entité, aucun (jamais toute la base).
+        if (!req.entity?._id) {
+          return res.json({ data: [], pagination: { currentPage: 1, totalPages: 0, totalItems: 0, itemsPerPage: 0, hasNextPage: false, hasPreviousPage: false } });
         }
+        query.entityId = req.entity._id;
 
         // Filtres
         if (template !== 'all') {
@@ -285,7 +287,7 @@ class MailMessageRouter extends EnduranceRouter {
   private async resendMail(req: any, res: any) {
     try {
       const existing = await MailMessage.findById(req.params.id);
-      if (existing && req.entity?._id && (existing as any).entityId && !(existing as any).entityId.equals(req.entity._id)) {
+      if (existing && (existing as any).entityId && !(req.entity?._id && (existing as any).entityId.equals(req.entity._id))) {
         return res.status(404).json({ message: 'MailMessage not found' });
       }
       const result = await resendMailService(
