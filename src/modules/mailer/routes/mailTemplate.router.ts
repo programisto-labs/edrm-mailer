@@ -124,6 +124,9 @@ class MailTemplateRouter extends EnduranceRouter {
           } else {
             conditions.push({ entityId });
           }
+        } else {
+          // Sans entité de requête : jamais les modèles d'une entité, seulement les modèles communs.
+          conditions.push({ $or: [{ entityId: null }, { entityId: { $exists: false } }] });
         }
 
         if (category !== 'all') {
@@ -216,7 +219,7 @@ class MailTemplateRouter extends EnduranceRouter {
         ) {
           return res.status(404).json({ message: 'Template de mail non trouvé' });
         }
-        if (req.entity?._id && (template as any).entityId && !(template as any).entityId.equals(req.entity._id)) {
+        if ((template as any).entityId && !(req.entity?._id && (template as any).entityId.equals(req.entity._id))) {
           return res.status(404).json({ message: 'Template de mail non trouvé' });
         }
 
@@ -382,7 +385,7 @@ class MailTemplateRouter extends EnduranceRouter {
         if ((wasPlatformMail || willPlatformMail) && !(await canManagePlatformMailTemplates(req))) {
           return res.status(404).json({ message: 'Template de mail non trouvé' });
         }
-        if (req.entity?._id && (existingTemplate as any).entityId && !(existingTemplate as any).entityId.equals(req.entity._id)) {
+        if ((existingTemplate as any).entityId && !(req.entity?._id && (existingTemplate as any).entityId.equals(req.entity._id))) {
           return res.status(404).json({ message: 'Template de mail non trouvé' });
         }
 
@@ -459,7 +462,7 @@ class MailTemplateRouter extends EnduranceRouter {
         ) {
           return res.status(404).json({ message: 'Template de mail non trouvé' });
         }
-        if (req.entity?._id && (existingTemplate as any).entityId && !(existingTemplate as any).entityId.equals(req.entity._id)) {
+        if ((existingTemplate as any).entityId && !(req.entity?._id && (existingTemplate as any).entityId.equals(req.entity._id))) {
           return res.status(404).json({ message: 'Template de mail non trouvé' });
         }
 
