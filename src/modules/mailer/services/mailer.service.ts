@@ -9,6 +9,11 @@ export interface SendMailOptions {
     data?: Record<string, any>;
     emailUser?: string;
     emailPassword?: string;
+    /**
+     * Cible SMTP (hôte ou URL). Ex. smtp.office365.com:587, smtps://host:465
+     * Si absent, EMAIL_SMTP_URL / transport Office 365 par défaut.
+     */
+    emailSmtpUrl?: string;
     /** Identifiant de l'entité (portail multi-entités). Optionnel. */
     entityId?: import('mongoose').Types.ObjectId;
     attachmentUrls?: Array<{
@@ -25,11 +30,48 @@ export interface SendMailResult {
 }
 
 /**
- * Crée un transporteur nodemailer avec les credentials fournis ou depuis les variables d'environnement
+ * Crée un transporteur nodemailer avec les credentials fournis ou depuis les variables d'environnement.
  */
-function createTransporter(emailUser?: string, emailPassword?: string): nodemailer.Transporter {
+function createTransporter(emailUser?: string, emailPassword?: string, emailSmtpUrl?: string): nodemailer.Transporter {
     const user = emailUser || process.env.EMAIL_USER || process.env.EDRM_MAILER_EMAIL_USER || '';
     const pass = emailPassword || process.env.EMAIL_PASSWORD || process.env.EDRM_MAILER_EMAIL_PASSWORD || '';
+
+    const raw = (emailSmtpUrl || process.env.EMAIL_SMTP_URL || '').trim();
+    if (raw) {
+        try {
+            const normalized = /^[a-z]+:\/\//i.test(raw) ? raw : `smtp://${raw}`;
+            const u = new URL(normalized);
+            const port = u.port ? parseInt(u.port, 10) : u.protocol === 'smtps:' ? 465 : 587;
+            const secure = u.protocol === 'smtps:' || port === 465;
+            const authUser = u.username ? decodeURIComponent(u.username) : user;
+            const authPass = u.password ? decodeURIComponent(u.password) : pass;
+            return nodemailer.createTransport({
+                host: u.hostname,
+                port,
+                secure,
+                auth: { user: authUser, pass: authPass },
+                tls: {
+                    ciphers: 'HIGH',
+                    rejectUnauthorized: false
+                }
+            });
+        } catch {
+            const hostPort = raw.split('@').pop()?.trim() || raw;
+            const [host, portPart] = hostPort.split(':');
+            const port = portPart ? parseInt(portPart, 10) : 587;
+            const secure = port === 465;
+            return nodemailer.createTransport({
+                host: host.replace(/^\/*/, ''),
+                port,
+                secure,
+                auth: { user, pass },
+                tls: {
+                    ciphers: 'HIGH',
+                    rejectUnauthorized: false
+                }
+            });
+        }
+    }
 
     return nodemailer.createTransport({
         host: 'smtp.office365.com',
@@ -176,7 +218,7 @@ export async function sendMailFromTemplate(options: SendMailOptions): Promise<Se
         }
 
         // Envoi de l'email
-        const transporter = createTransporter(emailUser, emailPassword);
+        const transporter = createTransporter(emailUser, emailPassword, options.emailSmtpUrl);
         const mailOptions: nodemailer.SendMailOptions = {
             from: newMailMessage.from,
             to: newMailMessage.to,
@@ -276,7 +318,7 @@ export async function resendMail(mailMessageId: string, emailUser?: string, emai
             };
         }
 
-        const transporter = createTransporter(user, pass);
+        const transporter = createTransporter(user, pass, process.env.EMAIL_SMTP_URL);
         const mailOptions: nodemailer.SendMailOptions = {
             from: mailMessage.from,
             to: mailMessage.to,
