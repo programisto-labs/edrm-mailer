@@ -47,6 +47,17 @@ function createTransporter(emailUser?: string, emailPassword?: string): nodemail
 }
 
 /**
+ * Remplace chaque `{clé}` présente dans `data` par sa valeur. Une `{clé}` absente de `data` reste telle quelle.
+ * Un seul passage : une valeur qui contient `{autre}` ou `$&` n'est ni réinterprétée ni altérée.
+ */
+export function fillTemplateVariables(text: string | undefined | null, data: Record<string, any> = {}): string {
+    if (!text) return '';
+    return text.replace(/\{([^{}]+)\}/g, (match, key: string) =>
+        Object.prototype.hasOwnProperty.call(data, key) ? String(data[key]) : match
+    );
+}
+
+/**
  * Envoie un email en créant un nouveau MailMessage à partir d'un template
  * Fonctionne comme le listener : récupère le template, remplace les variables, crée le message et l'envoie
  */
@@ -126,27 +137,16 @@ export async function sendMailFromTemplate(options: SendMailOptions): Promise<Se
             };
         }
 
-        // Traitement du body avec remplacement des variables
-        const processedBody = Object.keys(options.data).reduce((body, key) => {
-            try {
-                const regex = new RegExp(`{${key}}`, 'g');
-                return body.replace(regex, String(options.data![key]));
-            } catch (replaceError) {
-                console.warn(`Error replacing template variable {${key}}`, {
-                    replaceError,
-                    key,
-                    value: options.data![key]
-                });
-                return body;
-            }
-        }, template.body);
+        // Remplacement des variables {clé} dans le corps ET le sujet
+        const processedBody = fillTemplateVariables(template.body, options.data);
+        const processedSubject = fillTemplateVariables(options.subject || template.subject, options.data);
 
         // Création du message
         const newMailMessage = new MailMessage({
             template: template._id,
             to: options.to,
             from: emailUser,
-            subject: options.subject || template.subject,
+            subject: processedSubject,
             body: processedBody,
             ...(options.entityId && { entityId: options.entityId })
         });
